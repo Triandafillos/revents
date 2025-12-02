@@ -1,40 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { events } from "../../../lib/data/sampleData";
-import type { AppEvent } from "../../../lib/types";
 import EventForm from "../form/EventForm";
 import EventCard from "./EventCard";
 import { AnimatePresence, motion } from "motion/react";
+import Counter from "../../counter/Counter";
+import { useAppDispatch, useAppSelector } from "../../../lib/stores/store";
+import { setEvents } from "../eventSlice";
 
-type Props = {
-  formOpen: boolean;
-  setFormOpen: (isOpen: boolean) => void;
-  selectedEvent: AppEvent | null;
-  formToggle: (event: AppEvent | null) => void;
-}
-
-export default function EventDashboard({ formOpen, setFormOpen, selectedEvent, formToggle }: Props) {
-  const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
-
-  const handleCreateEvent = (event: AppEvent) => {
-    setAppEvents(prevState => [...prevState, event]);
-  }
-
-  const handleUpdateEvent = (event: AppEvent) => {
-    return setAppEvents(prevState => prevState.map(e => e.id === event.id ? event : e));
-  }
-
-  const handleDeleteEvent = (eventId: string) => {
-    setAppEvents(prevState => prevState.filter(e => e.id !== eventId));
-  }
+export default function EventDashboard() {
+  const dispatch = useAppDispatch();
+  const {events: appEvents, selectedEvent, formOpen} = useAppSelector(state => state.event);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setAppEvents(events);
+    dispatch(setEvents(events));
 
-    return () => {
-      setAppEvents([]);
-    }
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="flex flex-row w-full gap-6">
@@ -49,18 +29,16 @@ export default function EventDashboard({ formOpen, setFormOpen, selectedEvent, f
             <div className="flex flex-col gap-4">
               {appEvents.map((event) => (
                 <EventCard
-                  selectEvent={formToggle}
                   key={event.id}
-                  event={event} 
-                  deleteEvent={handleDeleteEvent}/>
+                  event={event} />
               ))}
             </div>
           </motion.div>
         </AnimatePresence>
       </div>
       <div className="w-2/5 overflow-hidden">
-        <AnimatePresence>
-          {formOpen && (
+        <AnimatePresence mode="wait">
+          {formOpen ? (
             <motion.div
               initial={{ opacity: 0, x: 200 }}
               animate={{ opacity: 1, x: 0 }}
@@ -68,11 +46,17 @@ export default function EventDashboard({ formOpen, setFormOpen, selectedEvent, f
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
               <EventForm
-                key={selectedEvent?.id ?? 'new'}
-                selectedEvent={selectedEvent}
-                createEvent={handleCreateEvent}
-                setFormOpen={setFormOpen}
-                updateEvent={handleUpdateEvent} />
+                key={selectedEvent?.id ?? 'new'} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key='counter'
+              initial={{ opacity: 0, x: 200 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 200 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <Counter></Counter>
             </motion.div>
           )}
         </AnimatePresence>
