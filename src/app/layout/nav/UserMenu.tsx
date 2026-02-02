@@ -1,16 +1,16 @@
 import UserIcon from "@heroicons/react/24/outline/UserIcon";
 import { CalendarIcon, PowerIcon } from "@heroicons/react/24/outline";
-import { useAppDispatch, useAppSelector } from "../../../lib/stores/store";
-import { signOut } from "../../../features/account/accountSlice";
+import { useAppSelector } from "../../../lib/stores/store";
 import { useNavigate } from "react-router";
+import { signOut } from "firebase/auth";
+import { auth } from "../../../lib/firebase/firebase";
 
 export default function UserMenu() {
     const navigate = useNavigate();
     const user = useAppSelector(state => state.account.user);
-    const dispatch = useAppDispatch();
 
-    const handleSignOut = () => {
-        dispatch(signOut());
+    const handleSignOut = async () => {
+        await signOut(auth)
         navigate('/');
     }
 
