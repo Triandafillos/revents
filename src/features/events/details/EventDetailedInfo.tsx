@@ -1,10 +1,9 @@
 import { CalendarIcon, InformationCircleIcon, MapPinIcon } from "@heroicons/react/24/outline";
-import { useAppSelector } from "../../../lib/stores/store";
 import MapComponent from "../../../app/shared/components/MapComponent";
 import { useState } from "react";
+import type { AppEvent } from "../../../lib/types";
 
-export default function EventDetailedInfo() {
-    const event = useAppSelector(state => state.event.selectedEvent);
+export default function EventDetailedInfo({ event }: { event: AppEvent }) {
     const [mapOpen, setMapOpen] = useState(false);
 
     return (

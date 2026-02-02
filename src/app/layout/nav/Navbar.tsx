@@ -4,6 +4,7 @@ import { useAppSelector } from "../../../lib/stores/store";
 
 export default function Navbar() {
     const user = useAppSelector(state => state.account.user);
+    const loading = useAppSelector(state => state.firestore.loading);
 
     return (
         <header className="px-3 w-full fixed top-0 z-50 bg-linear-to-r from-primary to-black">
@@ -15,6 +16,7 @@ export default function Navbar() {
                     <NavLink to='/events' end>Events</NavLink>
                     <NavLink to='/createEvent'>Create</NavLink>
                 </nav>
+                {loading && <span className="loading loading-lg text-white"></span>}
                 <div className="flex align-middle gap-3 ml-auto">
                     {user ? (
                         <UserMenu />
