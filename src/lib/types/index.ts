@@ -1,26 +1,37 @@
 import type { Timestamp } from "firebase/firestore";
 
 export type AppUser = {
-    uid: string;
-    displayName: string;
-    email: string;
-    photoURL?: string;
-    providerId: string;
+  uid: string;
+  displayName: string;
+  email: string;
+  photoURL?: string;
+  providerId: string;
 };
 
+export type Profile = {
+  id: string;
+  photoURL?: string;
+  displayName: string;
+  createdAt: string;
+  description: string;
+  followersCount: number;
+  followingCount: number;
+}
+
 export type AppEvent = {
-    id: string;
-    title: string;
-    date: string;
-    description: string;
-    category: string;
-    city: string;
-    venue: string;
-    latitude: number;
-    longitude: number;
-    hostUid: string;
-    attendees: Attendee[];
-    attendeeIds: string[];
+  id: string;
+  title: string;
+  date: string;
+  description: string;
+  category: string;
+  city: string;
+  venue: string;
+  latitude: number;
+  longitude: number;
+  hostUid: string;
+  isCancelled: boolean;
+  attendees: Attendee[];
+  attendeeIds: string[];
 }
 
 export type FirestoreEvent = Omit<AppEvent, 'date'> & {
@@ -28,10 +39,10 @@ export type FirestoreEvent = Omit<AppEvent, 'date'> & {
 }
 
 export type Attendee = {
-    id: string;
-    displayName: string;
-    photoURL?: string;
-    isHost: boolean;
+  id: string;
+  displayName: string;
+  photoURL?: string;
+  isHost: boolean;
 }
 
 export interface Suggestion {

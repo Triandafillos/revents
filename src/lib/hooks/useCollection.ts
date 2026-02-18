@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../stores/store";
 import { setCollection, setError, setLoading } from "../firebase/firestoreSlice";
 import { db } from "../firebase/firebase";
 import { toast } from "react-toastify";
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useRef, useSyncExternalStore } from "react";
 import { convertTimestamps } from "../util/util";
 
 type Options = {
@@ -15,11 +15,16 @@ export const useCollection = <T extends DocumentData>({ path, listen = true }: O
     const dispatch = useAppDispatch();
     const collectionData = useAppSelector(state => state.firestore.collections[path]) as T[];
     const loading = useAppSelector(state => state.firestore.loading);
+    const hasSetLoading = useRef(false);
+    const loadedInitial = useRef(false);
 
     const subscribeToCollection = useCallback(() => {
         if (!listen) return () => { };
 
-        dispatch(setLoading(true));
+        if (!hasSetLoading.current) {
+            dispatch(setLoading(true));
+            hasSetLoading.current = true;
+        }
 
         const colRef = collection(db, path);
 
@@ -31,11 +36,13 @@ export const useCollection = <T extends DocumentData>({ path, listen = true }: O
             });
             dispatch(setCollection({ path, data }));
             dispatch(setLoading(false));
+            loadedInitial.current = true;
         }, (error) => {
             console.log(error);
             dispatch(setLoading(false));
             dispatch(setError(error.message));
             toast.error(error.message);
+            loadedInitial.current = true;
         });
 
         return () => {
@@ -45,5 +52,6 @@ export const useCollection = <T extends DocumentData>({ path, listen = true }: O
 
     useSyncExternalStore(subscribeToCollection, () => collectionData);
 
-    return { data: collectionData, loading };
+    // eslint-disable-next-line react-hooks/refs
+    return { data: collectionData, loading, loadedInitial: loadedInitial.current };
 }
