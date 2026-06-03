@@ -1,10 +1,13 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { CollectionOptions } from "../types";
+import path from "path";
 
 type FirestoreState = {
     collections: Record<string, unknown[]>;
     documents: Record<string, Record<string, unknown>>;
     loading: boolean;
     error: string | null;
+    options: Record<string, CollectionOptions>;
 }
 
 const initialState: FirestoreState = {
@@ -12,6 +15,7 @@ const initialState: FirestoreState = {
     documents: {},
     loading: false,
     error: null,
+    options: {}
 }
 
 export const firestoreSlice = createSlice({
@@ -33,7 +37,11 @@ export const firestoreSlice = createSlice({
             }
             state.documents[action.payload.path][action.payload.id] = action.payload.data;
         },
+        setCollectionOptions: (state, action: PayloadAction<{path: string, options: CollectionOptions}>) => {
+            const { path, options } = action.payload;
+            state.options[path] = {...state.options[path], ...options };
+        }
     }
 });
 
-export const { setLoading, setError, setCollection, setDocument } = firestoreSlice.actions;
+export const { setLoading, setError, setCollection, setDocument, setCollectionOptions } = firestoreSlice.actions;

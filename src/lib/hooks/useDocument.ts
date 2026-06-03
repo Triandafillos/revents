@@ -28,6 +28,7 @@ export const useDocument = <T extends DocumentData>({ path, id, listen = true }:
             hasSetLoading.current = true;
         }
 
+        console.log(db, path, id);
         const docRef = doc(db, path, id);
 
         const unsubscribe = onSnapshot(docRef, (snapshot) => {
