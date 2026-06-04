@@ -90,3 +90,13 @@ export type SortOptions = {
   attribute: string;
   direction: OrderByDirection;
 }
+
+export type ChatComment = {
+  id: string;
+  displayName: string;
+  photoURL?: string;
+  uid: string;
+  text: string;
+  date: string;
+}
+
