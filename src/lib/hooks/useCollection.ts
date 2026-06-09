@@ -5,13 +5,15 @@ import { toast } from "react-toastify";
 import { useCallback, useRef, useSyncExternalStore } from "react";
 import { convertTimestamps } from "../util/util";
 import { getQuery } from "../firebase/getQuery";
+import type { CollectionOptions } from "../types";
 
 type Options = {
     path: string;
     listen?: boolean;
+    collectionOptions?: CollectionOptions;
 }
 
-export const useCollection = <T extends DocumentData>({ path, listen = true }: Options) => {
+export const useCollection = <T extends DocumentData>({ path, listen = true, collectionOptions }: Options) => {
     const dispatch = useAppDispatch();
     const collectionData = useAppSelector(state => state.firestore.collections[path]) as T[];
     const loading = useAppSelector(state => state.firestore.loading);
@@ -27,7 +29,9 @@ export const useCollection = <T extends DocumentData>({ path, listen = true }: O
             hasSetLoading.current = true;
         }
 
-        const query = getQuery(path, options);
+        const optionsToUse = collectionOptions || options;
+
+        const query = getQuery(path, optionsToUse);
 
         const unsubscribe = onSnapshot(query, (snapshot) => {
             const data: T[] = [];
@@ -49,7 +53,7 @@ export const useCollection = <T extends DocumentData>({ path, listen = true }: O
         return () => {
             unsubscribe();
         }
-    }, [dispatch, path, listen, options]);
+    }, [dispatch, path, listen, options, collectionOptions]);
 
     useSyncExternalStore(subscribeToCollection, () => collectionData);
 
